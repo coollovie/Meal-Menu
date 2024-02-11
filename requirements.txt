@@ -1,3 +1,2 @@
-random
 pandas
 streamlit
