@@ -1,40 +1,69 @@
-import altair as alt
-import numpy as np
-import pandas as pd
+
 import streamlit as st
+import pandas as pd
+import random
 
-"""
-# Welcome to Streamlit!
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+#breakfast_inputs =list( st.text_input("Enter breakfast text"))
+#lunch_inputs = list(st.text_input("Enter lunch text"))
+#dinner_inputs = list( st.text_input("Enter dinner text"))
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+breakfast_meals = st.text_input("Enter breakfast text").replace(' ', '_').split(',')
+lunch_meals = st.text_input("Enter lunch text").replace(' ', '_').split(',')
+dinner_meals = st.text_input("Enter dinner text").replace(' ', '_').split(',')
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+# List of Indian meals for breakfast, lunch, and dinner
+#breakfast_meals = ["Aloo Paratha", "Idli Sambar", "Poha", "Upma", "Dosa"]
+#lunch_meals = ["Dal Rice", "Chole Bhature", "Paneer Tikka Masala with Roti", "Chicken Biryani", "Rajma Rice"]
+#dinner_meals = ["Butter Chicken with Naan", "Fish Curry with Rice", "Matar Paneer with Roti", "Veg Pulao", "Palak Paneer with Roti"]
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+# Days of the week
+days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+# Function to plan meals
+def plan_meals(breakfast_inputs = ["Aloo Pronthha", "Milk Meusli", "Poha", "Upma", "Ajwain Pronthha", "Suji Chila","Bread Omelette","Butter Toast & Milk"],
+               lunch_inputs = ["Dal Roti","Pulao", "", "Rajma Rice"],
+               dinner_inputs = ["Dal", "Fish Curry with Rice", "Matar Paneer with Roti", "Veg Pulao", "Palak Paneer with Roti"]):
+    # Create a dictionary to store the meal plan
+    meal_plan = {}
+
+    # For each day of the week
+    for day in days:
+        # Select a random meal from the list for each meal time
+        breakfast = random.choice(breakfast_inputs)
+        lunch = random.choice(lunch_inputs)
+        dinner = random.choice(dinner_inputs)
+
+        # Add the meals to the meal plan
+        meal_plan[day] = {"Breakfast": breakfast.replace('_', ' ').title(),
+                          "Lunch": lunch.replace('_', ' ').title(),
+                          "Dinner": dinner.replace('_', ' ').title()}
+    
+    df = pd.DataFrame(meal_plan).T
+
+    # Return the meal plan
+    return df
+
+
+# Main function
+def main():
+    st.title('Meal Planner')
+    
+    #st.write('The user entered:', user_input)
+
+    # Plan the meals
+    df = plan_meals()
+
+    # Display the DataFrame
+    st.dataframe(df)
+    
+    
+
+
+
+
+if __name__ == "__main__":
+    main()
